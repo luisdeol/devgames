@@ -3,6 +3,7 @@ using DevGames.API.Entities;
 using DevGames.API.Models;
 using DevGames.API.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace DevGames.API.Controllers
 {
@@ -23,6 +24,8 @@ namespace DevGames.API.Controllers
         {
             var boards = repository.GetAll();
 
+            Log.Information($"{boards.Count()} boards retrieved.");
+
             return Ok(boards);
         }
 
@@ -37,7 +40,24 @@ namespace DevGames.API.Controllers
             return Ok(board);
         }
 
+        /// <summary>
+        /// Post Board
+        /// </summary>
+        /// <remarks>
+        /// Request Body Example:
+        /// {
+        /// "gameTitle": "Starcraft 2",
+        /// "description": "A strategy game",
+        /// "rules": "1. No SPAM."
+        /// }
+        /// </remarks>
+        /// <param name="model">Board data</param>
+        /// <returns>Created object</returns>
+        /// <response code="201">Success</response>
+        /// <response code="400">Invalid data</response>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Post(AddBoardInputModel model)
         {
             var board = mapper.Map<Board>(model);
